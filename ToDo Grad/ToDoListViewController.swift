@@ -19,7 +19,7 @@ class ToDoListViewController: UITableViewController {
     
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
+// MARK: - UITableViewDataSource
 
 extension ToDoListViewController {
     
@@ -38,6 +38,25 @@ extension ToDoListViewController {
          
         return cell
     }
+    
+    
+}
+
+// MARK: - UITableViewDelegate
+
+extension ToDoListViewController {
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(itemArray[indexPath.row])
+        
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+        let cellType = cell.accessoryType
+        
+        cell.accessoryType = cellType == .none ? .checkmark : .none
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
 }
 
 // MARK: - Setup NavigationBar
