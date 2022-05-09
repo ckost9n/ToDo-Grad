@@ -30,7 +30,16 @@
                             <outlet property="delegate" destination="RRx-hT-716" id="NPT-JM-5d0"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="ToDo List" id="Ov9-W1-J5j"/>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="ToDo List" id="Ov9-W1-J5j">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="99H-kR-aZe">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addButtonPressed:" destination="RRx-hT-716" id="eAq-JF-Xxa"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BF6-KC-1ds" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
