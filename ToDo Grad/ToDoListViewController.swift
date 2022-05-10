@@ -10,10 +10,15 @@ import UIKit
 class ToDoListViewController: UITableViewController {
     
     private var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
+    
+    private let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        
+        guard let items = defaults.array(forKey: "TodoListArray") as? [String] else { return }
+        itemArray = items
     }
     
     // MARK: - Add New Items
@@ -28,6 +33,9 @@ class ToDoListViewController: UITableViewController {
             guard let alertText = alert.textFields?.first?.text else { return }
             
             self.itemArray.append(alertText)
+            
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
             self.tableView.reloadData()
         }
         
