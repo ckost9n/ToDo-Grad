@@ -9,16 +9,16 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     
-    private var itemArray = ["Find Mike", "Buy Eggos", "Destory Demogorgon"]
+    private var itemArray: [Item] = []
     
-    private let defaults = UserDefaults.standard
+    private let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         
-        guard let items = defaults.array(forKey: "TodoListArray") as? [String] else { return }
-        itemArray = items
+        loadItems()
+        
     }
     
     // MARK: - Add New Items
@@ -32,11 +32,9 @@ class ToDoListViewController: UITableViewController {
             
             guard let alertText = alert.textFields?.first?.text else { return }
             
-            self.itemArray.append(alertText)
+            self.itemArray.append(Item(title: alertText))
             
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
-            
-            self.tableView.reloadData()
+            self.saveItems()
         }
         
         alert.addTextField { alertTextField in
@@ -46,6 +44,36 @@ class ToDoListViewController: UITableViewController {
         alert.addAction(action)
         
         present(alert, animated: true)
+    }
+    
+}
+
+// MARK: - Model Manupulation Method
+
+extension ToDoListViewController {
+    
+    private func saveItems() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error emcoding item array, \(error)")
+        }
+        
+        tableView.reloadData()
+    }
+    
+    private func loadItems() {
+        
+        guard let data = try? Data(contentsOf: dataFilePath!) else { return }
+        let decoder = PropertyListDecoder()
+        do {
+            itemArray = try decoder.decode([Item].self, from: data)
+        } catch {
+            print("Error decoding item array, \(error)")
+        }
     }
     
 }
@@ -63,7 +91,10 @@ extension ToDoListViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
 
-        content.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+
+        content.text = item.title
+        cell.accessoryType = item.done == true ? .checkmark : .none
 
         cell.contentConfiguration = content
          
@@ -78,12 +109,9 @@ extension ToDoListViewController {
 extension ToDoListViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(itemArray[indexPath.row])
         
-        guard let cell = tableView.cellForRow(at: indexPath) else { return }
-        let cellType = cell.accessoryType
-        
-        cell.accessoryType = cellType == .none ? .checkmark : .none
+        itemArray[indexPath.row].done.toggle()
+        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
