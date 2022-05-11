@@ -13,14 +13,12 @@ class ToDoListViewController: UITableViewController {
     private var itemArray: [Item] = []
     
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
-//    private let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-//        loadItems()
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        loadItems()
         
     }
     
@@ -68,16 +66,15 @@ extension ToDoListViewController {
         tableView.reloadData()
     }
     
-//    private func loadItems() {
-//
-//        guard let data = try? Data(contentsOf: dataFilePath!) else { return }
-//        let decoder = PropertyListDecoder()
-//        do {
-//            itemArray = try decoder.decode([Item].self, from: data)
-//        } catch {
-//            print("Error decoding item array, \(error)")
-//        }
-//    }
+    private func loadItems() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("Error fetching data from context \(error)")
+        }
+        
+    }
     
 }
 
