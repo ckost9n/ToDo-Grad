@@ -66,14 +66,13 @@ extension ToDoListViewController {
         tableView.reloadData()
     }
     
-    private func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+    private func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemArray = try context.fetch(request)
         } catch {
             print("Error fetching data from context \(error)")
         }
-        
+        tableView.reloadData()
     }
     
 }
@@ -127,21 +126,20 @@ extension ToDoListViewController {
 extension ToDoListViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        guard !searchBar.text!.isEmpty else {
+            loadItems()
+            return
+        }
+        
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         
-        request.predicate = predicate
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-        request.sortDescriptors = [sortDescriptor]
-        
-        do {
-            itemArray = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context \(error)")
-        }
-        tableView.reloadData()
+        loadItems(with: request)
+
     }
     
 }
