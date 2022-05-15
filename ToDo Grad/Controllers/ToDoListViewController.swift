@@ -127,11 +127,6 @@ extension ToDoListViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        guard !searchBar.text!.isEmpty else {
-            loadItems()
-            return
-        }
-        
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
         request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
@@ -140,6 +135,16 @@ extension ToDoListViewController: UISearchBarDelegate {
         
         loadItems(with: request)
 
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        guard !searchBar.text!.isEmpty else {
+            loadItems()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            return
+        }
     }
     
 }
