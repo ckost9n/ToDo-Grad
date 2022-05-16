@@ -16,7 +16,8 @@ class ToDoListViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+//        setupNavigationBar()
+        
 //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
         
@@ -147,21 +148,4 @@ extension ToDoListViewController: UISearchBarDelegate {
         }
     }
     
-}
-
-// MARK: - Setup NavigationBar
-
-extension ToDoListViewController {
-    
-    private func setupNavigationBar() {
-        let coloredAppearance = UINavigationBarAppearance()
-        coloredAppearance.configureWithOpaqueBackground()
-        coloredAppearance.backgroundColor = .systemBlue
-        coloredAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.standardAppearance = coloredAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = coloredAppearance
-
-        navigationController?.navigationBar.tintColor = UIColor.white
-    }
 }
