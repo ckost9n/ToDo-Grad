@@ -10,7 +10,7 @@ import CoreData
 
 class CategoryViewController: UITableViewController {
     
-    private var categoryArray: [String] = []
+    private var categoryArray: [Category] = []
     
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
@@ -21,7 +21,7 @@ class CategoryViewController: UITableViewController {
         
         
         
-//        loadCategories()
+        loadCategories()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -32,19 +32,17 @@ class CategoryViewController: UITableViewController {
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "Add Category", style: .default) { action in
-//            guard let self = self else { return }
+        let action = UIAlertAction(title: "Add Category", style: .default) { [weak self] action in
+            guard let self = self else { return }
             
             guard let alertText = alert.textFields?.first?.text else { return }
             
-            self.categoryArray.append(alertText)
-            print(alertText)
-//            let newCategory = Category(context: self.context)
-//            newCategory.name = alertText
+            let newCategory = Category(context: self.context)
+            newCategory.name = alertText
             
-//            self.categoryArray.append(newCategory)
-//            self.saveCategories()
-            self.tableView.reloadData()
+            self.categoryArray.append(newCategory)
+            self.saveCategories()
+            
         }
         
         alert.addTextField { alertTextField in
@@ -67,7 +65,6 @@ class CategoryViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return categoryArray.count
     }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
@@ -75,16 +72,13 @@ class CategoryViewController: UITableViewController {
         
         let category = categoryArray[indexPath.row]
         
-        content.text = category
+        content.text = category.name
 
         cell.contentConfiguration = content
 
         return cell
     }
     
-
-    
-
 }
 
 // MARK: - Model Manupulation Method
@@ -102,13 +96,13 @@ extension CategoryViewController {
         tableView.reloadData()
     }
     
-//    private func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-//        do {
-//            categotyArray = try context.fetch(request)
-//        } catch {
-//            print("Error fetching data from context \(error)")
-//        }
-//        tableView.reloadData()
-//    }
+    private func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
+        do {
+            categoryArray = try context.fetch(request)
+        } catch {
+            print("Error fetching data from context \(error)")
+        }
+        tableView.reloadData()
+    }
     
 }
