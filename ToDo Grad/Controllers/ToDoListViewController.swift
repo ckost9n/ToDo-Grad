@@ -12,14 +12,19 @@ class ToDoListViewController: UITableViewController {
     
     private var itemArray: [Item] = []
     
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupNavigationBar()
         
 //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        loadItems()
+        
         
     }
     
@@ -36,6 +41,7 @@ class ToDoListViewController: UITableViewController {
             
             let newItem = Item(context: self.context)
             newItem.title = alertText
+            newItem.parentCategory = self.selectedCategory
             
             self.itemArray.append(newItem)
             
@@ -68,6 +74,17 @@ extension ToDoListViewController {
     }
     
     private func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+        
+        guard let categoryName = selectedCategory?.name else { return }
+        
+        let predicateLoad = NSPredicate(format: "parentCategory.name MATCHES %@", categoryName)
+        
+        if let predicateSort = request.predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateLoad, predicateSort])
+        } else {
+            request.predicate = predicateLoad
+        }
+        
         do {
             itemArray = try context.fetch(request)
         } catch {
@@ -130,7 +147,11 @@ extension ToDoListViewController: UISearchBarDelegate {
         
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        guard let searchText = searchBar.text else { return }
+        
+        let predicateSort = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
+        
+        request.predicate = predicateSort
         
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         

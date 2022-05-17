@@ -81,6 +81,16 @@ class CategoryViewController: UITableViewController {
     
 }
 
+// MARK: - Table view delegate
+
+extension CategoryViewController {
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+}
+
 // MARK: - Model Manupulation Method
 
 extension CategoryViewController {
@@ -103,6 +113,18 @@ extension CategoryViewController {
             print("Error fetching data from context \(error)")
         }
         tableView.reloadData()
+    }
+    
+}
+
+// MARK: - Navigation prepare for segue
+
+extension CategoryViewController {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let destenationVC = segue.destination as? ToDoListViewController else { return }
+        guard let indexPath = tableView.indexPathForSelectedRow else { return }
+        destenationVC.selectedCategory = categoryArray[indexPath.row]
     }
     
 }
